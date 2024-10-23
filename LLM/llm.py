@@ -87,13 +87,14 @@ def gerar_perguntas_e_atualizar_dataset(df: pd.DataFrame, pergunta, n):
         resposta = pergunta_llm(nova_pergunta)  # Obter a resposta para a nova pergunta
         if resposta:
             # Printar a pergunta e resposta
-            print(f"Pergunta: {nova_pergunta}")
-            print(f"Resposta: {resposta}\n")
+            #print(f"Pergunta: {nova_pergunta}")
+            #print(f"Resposta: {resposta}\n")
             # Atualizar o dataframe localmente
             df = update_dataset(df, nova_pergunta, resposta)
 
     # Após todas as atualizações, salvar o dataframe no arquivo CSV
     df.to_csv('../dataset/dataset.csv', index=False)
+    return nova_pergunta,resposta
 
 
 

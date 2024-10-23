@@ -11,6 +11,7 @@ from LLM.llm import gerar_perguntas_e_atualizar_dataset
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
 
 df = pd.read_csv('dataset/dataset.csv')
+print(df)
 pergunta = 'Como utilizar algoritmos de IA?'#input("Faça sua pergunta: ")
 
 check = VerificadorDePerguntas(df, threshold=0.75);
@@ -19,7 +20,8 @@ pergunta_similar, resposta_similar = check.verificar_similaridade(pergunta);
 if(pergunta_similar):
         print(f"Pergunta similar encontrada no dataset: {pergunta_similar}")
         print(f"Resposta associada: {resposta_similar}\n")
-else:   gerar_perguntas_e_atualizar_dataset(df, pergunta, 3)  # Gerar 5 novas perguntas
+else:   print("Nao existe")
+        #gerar_perguntas_e_atualizar_dataset(df, pergunta, 3)  # Gerar 5 novas perguntas
 
 
 

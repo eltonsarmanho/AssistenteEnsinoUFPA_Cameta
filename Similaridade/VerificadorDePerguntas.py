@@ -1,9 +1,6 @@
 import pandas as pd
-import maritalk
-import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
 
 
 # Classe para verificar perguntas similares no dataset
@@ -14,6 +11,10 @@ class VerificadorDePerguntas:
         self.vectorizer = TfidfVectorizer()
 
     def verificar_similaridade(self, pergunta):
+        # Verificar se o DataFrame está vazio
+        if self.df.empty:
+            return None, None
+
         # Vetorizar as perguntas no dataset e a nova pergunta
         tfidf = self.vectorizer.fit_transform(self.df['Pergunta'].tolist() + [pergunta])
         # Calcular a similaridade de cosseno
@@ -30,4 +31,5 @@ class VerificadorDePerguntas:
             return pergunta_similar, resposta_similar
 
         return None, None
+
 
