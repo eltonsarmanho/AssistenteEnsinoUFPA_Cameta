@@ -3,4 +3,4 @@ pandas==2.0.3
 numpy==1.23.5  # Versão compatível com pandas 2.0.3
 scikit_learn==1.5.2
 streamlit==1.39.0
-
+setuptools==65.5.0  # Versão estável com distutils
