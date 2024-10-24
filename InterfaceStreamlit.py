@@ -3,11 +3,18 @@ import pandas as pd
 import time
 
 from LLMHandler import LLMHandler
+from QuestionarioDB import QuestionarioDB
 from VerificadorDePerguntas import VerificadorDePerguntas
 
 from streamlit.web import cli as stcli
 from streamlit import runtime
 import sys
+
+host = "aws-0-sa-east-1.pooler.supabase.com"
+port = "6543"
+dbname = "postgres"
+user = "postgres.wrlwzbewagseuoisnmqz"
+password = "RR%EPQ^dCen6%fTo"
 
 # Função principal que gera a interface com Streamlit
 def main():
@@ -84,7 +91,8 @@ def sistema_perguntas(escolha):
 # Função para a página de avaliação
 def pagina_avaliacao():
     st.title("Avaliação da Resposta")
-
+    db = QuestionarioDB(host, port, dbname, user, password)
+    db.conectar()
     st.subheader("Avalie a resposta que você recebeu")
     col1, col2 = st.columns(2)
 
@@ -100,6 +108,12 @@ def pagina_avaliacao():
 
     # Botão para enviar avaliação e voltar para o sistema de perguntas
     if st.button("Enviar Avaliação"):
+        try:
+        # Insere dados na tabela Questionario
+            db.inserir_dados(qualidade_resposta, tempo_resposta)
+        except Exception as error:
+            print(f"Erro: {error}")
+        finally: db.fechar_conexao()
         st.write(f"Você avaliou a **qualidade** da resposta com {qualidade_resposta} estrelas.")
         st.write(f"Você avaliou o **tempo** de resposta com {tempo_resposta} estrelas.")
         st.session_state.page = 'perguntas'  # Retorna à página de perguntas após avaliar
