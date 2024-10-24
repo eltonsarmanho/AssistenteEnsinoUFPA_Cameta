@@ -115,42 +115,42 @@ class QuestionarioDB:
 
 
 # Uso da classe QuestionarioDB
-if __name__ == '__main__':
-     # Parâmetros de conexão ao banco de dados
-     host = "aws-0-sa-east-1.pooler.supabase.com"
-     port = "6543"
-     dbname = "postgres"
-     user = "postgres.wrlwzbewagseuoisnmqz"
-     password = "RR%EPQ^dCen6%fTo"
-
-     # Instancia a classe e conecta ao banco
-     db = QuestionarioDB(host, port, dbname, user, password)
-     db.conectar()
-
-     try:
-         # Cria a tabela Questionario
-         db.criar_tabela_requisicoes()
+# if __name__ == '__main__':
+#      # Parâmetros de conexão ao banco de dados
+#      host = "aws-0-sa-east-1.pooler.supabase.com"
+#      port = "6543"
+#      dbname = "postgres"
+#      user = "postgres.wrlwzbewagseuoisnmqz"
+#      password = "RR%EPQ^dCen6%fTo"
 #
-#         # Insere dados na tabela Questionario
-         #db.inserir_dados(4, 3)
-         #db.inserir_dados_questao('Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?',
-         #                          'Como a Lei Geral deComo a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras? ',0)
+#      # Instancia a classe e conecta ao banco
+#      db = QuestionarioDB(host, port, dbname, user, password)
+#      db.conectar()
 #
+#      try:
+#          # Cria a tabela Questionario
+#          db.criar_tabela_requisicoes()
+# #
+# #         # Insere dados na tabela Questionario
+#          #db.inserir_dados(4, 3)
+#          #db.inserir_dados_questao('Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?',
+#          #                          'Como a Lei Geral deComo a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras?Como a Lei Geral de Proteção de Dados (LGPD) afeta as práticas de privacidade de dados nas empresas brasileiras? ',0)
+# #
+# #
+#          # Registrar uma nova requisição com a pergunta e o tempo gasto
+#          pergunta = "Qual é a capital da França?"
+#          inicio = time.time()
+#          # Simulação de processamento da pergunta
+#          time.sleep(2)  # Simulação de 2 segundos para processamento
+#          fim = time.time()
+#          tempo_requisicao = fim - inicio
+#          db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
+#      # Lista os dados da tabela Questionario
+#          #db.listar_dados()
+# #
+#      except Exception as error:
+#          print(f"Erro: {error}")
 #
-         # Registrar uma nova requisição com a pergunta e o tempo gasto
-         pergunta = "Qual é a capital da França?"
-         inicio = time.time()
-         # Simulação de processamento da pergunta
-         time.sleep(2)  # Simulação de 2 segundos para processamento
-         fim = time.time()
-         tempo_requisicao = fim - inicio
-         db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
-     # Lista os dados da tabela Questionario
-         #db.listar_dados()
-#
-     except Exception as error:
-         print(f"Erro: {error}")
-
-     finally:
-         # Fecha a conexão com o banco de dados
-         db.fechar_conexao()
+#      finally:
+#          # Fecha a conexão com o banco de dados
+#          db.fechar_conexao()
