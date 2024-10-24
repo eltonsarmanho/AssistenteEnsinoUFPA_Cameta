@@ -35,7 +35,7 @@ def sistema_perguntas(escolha):
 
     # Carregar dataset (ou criar novo)
     try:
-        df = pd.read_csv('dataset.csv')
+        df = pd.read_csv('../dataset.csv')
     except FileNotFoundError:
         df = pd.DataFrame(columns=['Pergunta', 'Resposta'])
 
@@ -63,19 +63,19 @@ def sistema_perguntas(escolha):
                     st.success("Nova pergunta gerada!")
                     st.write(f"**Pergunta:** {pergunta}")
                     st.write(f"**Resposta:** {resposta}")
-                    df.to_csv('../dataset/dataset.csv', index=False)
+                    df.to_csv('../dataset.csv', index=False)
 
         if pergunta:
             if st.button("Avaliar Resposta"):
                 # Atualiza estado da sessão para mudar a página
                 st.session_state.page = 'avaliacao'  # Ir para a página de avaliação
-                st.experimental_rerun()  # Recarrega a página para refletir a mudança de estado
+                st.rerun()  # Recarrega a página para refletir a mudança de estado
         #else: #st.warning( #   "Por favor, insira uma pergunta antes de tentar avaliar a resposta.")  # Exibe um alerta se a pergunta estiver vazia
 
 
     elif escolha == "Histórico":
         st.subheader("Histórico de Perguntas e Respostas")
-        df = pd.read_csv('dataset.csv')
+        df = pd.read_csv('../dataset.csv')
         df_historico = df[df['Classe'] == 1]
         df_historico = df_historico.drop('Classe', axis=1)
         st.dataframe(df_historico, height=400)
@@ -104,7 +104,7 @@ def pagina_avaliacao():
         st.session_state.page = 'perguntas'  # Retorna à página de perguntas após avaliar
         with st.spinner('Registrando Avaliação...'):
             time.sleep(3)  # Simulação de tempo de processamento
-        st.experimental_rerun()  # Recarrega a página para refletir a mudança de estado
+        st.rerun()  # Recarrega a página para refletir a mudança de estado
 
 if __name__ == '__main__':
     if runtime.exists():

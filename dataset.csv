@@ -351,3 +351,57 @@ Item* remover(Fila *fila) {
 
 // Funções para verificar se a fila está vazia ou cheia
 int filaVazia(Fila *fila) {",1
+Como a pilha é utilizada na resolução de problemas de algoritmos?,"A pilha é uma estrutura de dados que segue o modelo LIFO (Last-In-First-Out), o que significa que o último elemento inserido na pilha será o primeiro a ser removido. Essa característica a torna única e adequada para resolver determinados tipos de problemas. Vou listar alguns cenários onde a pilha é utilizada em algoritmos:
+
+Desfazer Ações**: Em muitos aplicativos, como editores de texto ou sistemas de controle de versão, a pilha é usada para ""desfazer"" ações. Quando uma ação é realizada, ela é empilhada. Se o usuário desejar reverter uma ação, a pilha é consultada e a ação mais recente é removida, revertendo o processo.
+
+Expressões Matemáticas e Sintaxe de Programação**: Ao avaliar expressões matemáticas ou sintaxe de programação, a pilha é usada para armazenar os operadores enquanto processa os valores. Por exemplo, em uma expressão como ""3+4*2"", os parênteses são empilhados, os valores são operados de acordo com as regras de precedência e, ao fechar parênteses, os valores são removidos da pilha.
+
+Percorrer Expressões ou Sintaxe de Forma Inversa**: Em muitos algoritmos de parser, ao analisar a sintaxe ou expressões, pode ser necessário percorrer a estrutura de forma inversa. Isso pode ser feito usando uma pilha para armazenar os nós ou tokens que foram encontrados e, em seguida, removendo-os na ordem inversa para reconstruir a estrutura.
+
+Caminho de Navegação**: Em algoritmos de navegação em árvores ou gráficos, uma pilha pode ser usada para armazenar o caminho percorrido. Ao visitar um nó, ele é empilhado, e ao voltar, os nós são removidos da pilha.
+
+Algoritmos de Backtracking**: Algoritmos de backtracking, como os usados em algoritmos de busca ou solução de quebra-cabeças, usam a pilha para lembrar de caminhos parcialmente explorados. Se uma decisão leva a um beco sem saída, a pilha pode ser usada para voltar ao último ponto viável e tentar outra direção.
+
+Esses são apenas alguns exemplos de como a pilha pode ser utilizada na resolução de problemas de algoritmos. A escolha de usar uma pilha depende das operações específicas do algoritmo e da natureza do problema a ser resolvido.",0
+Como a estrutura de dados pilha pode ser aplicada em algoritmos de ordenação?,"A estrutura de dados pilha, que segue o princípio Last-In-First-Out (LIFO), pode ser aplicada em algoritmos de ordenação indiretamente, ao invés de diretamente. Isso significa que a pilha não é usada para ordenar os elementos, mas sim para controlar o processo de ordenação em certos algoritmos.
+
+Um exemplo de algoritmo de ordenação que utiliza uma pilha é o algoritmo de ordenação por camadas (Layer Sorting). Neste algoritmo, um tabuleiro é preenchido com cartas de baralho, e as cartas são ordenadas em camadas de acordo com o seu valor. A pilha é usada para controlar as camadas que já foram ordenadas, garantindo que as cartas sejam removidas da camada correta e colocadas na próxima camada de menor valor.
+
+Outro exemplo é o algoritmo de ordenação por contagem (Counting Sort), que é uma forma de ordenação digital. Neste algoritmo, a pilha pode ser utilizada para gerenciar o número de iterações do loop externo, onde cada elemento é comparado e contado para a ordenação.
+
+A aplicação da pilha nesses algoritmos não é direta, pois a pilha não manipula os dados de ordenação diretamente. Em vez disso, ela ajuda a gerenciar o fluxo ou a estrutura do algoritmo de ordenação.",0
+Qual é a diferença entre uma pilha e uma lista em termos de estrutura de dados e operações permitidas?,"Uma pilha e uma lista são dois tipos de estruturas de dados que possuem características distintas e são utilizadas em diferentes contextos. Aqui está uma comparação entre elas:
+
+**Pilha:**
+
+Estrutura:** Uma pilha é uma estrutura de dados baseada em um princípio de acesso sequencial e um único ponto de saída. Os dados são adicionados e removidos por um único ponto, seguindo o padrão LIFO (Last-In, First-Out), onde o último elemento a entrar é o primeiro a sair.
+
+Operações Permitidas:** As principais operações permitidas em uma pilha são:
+   - Empilhar um elemento (push): adicionar um elemento no topo da pilha.
+   - Desempilhar um elemento (pop): remover o elemento do topo da pilha.
+   - Verificar o topo da pilha (peek): visualizar o elemento no topo da pilha sem removê-lo.
+   - Verificar o tamanho da pilha: saber quantos elementos estão armazenados na pilha.
+
+**Lista:**
+
+Estrutura:** Uma lista é uma estrutura de dados baseada em um princípio de acesso direto e sequencial. Os dados são armazenados em uma sequência contínua de elementos, e é possível acessar qualquer elemento diretamente por sua posição.
+
+Operações Permitidas:** As principais operações permitidas em uma lista são:
+   - Inserir um elemento em uma posição específica (insert): adicionar um elemento em uma posição definida na lista.
+   - Remover um elemento de uma posição específica (delete): remover um elemento de uma posição definida na lista.
+   - Acessar um elemento por sua posição (get): visualizar o elemento em uma posição específica da lista.
+   - Verificar o tamanho da lista: saber quantos elementos estão armazenados na lista.
+
+Ambas as estruturas têm suas vantagens e desvantagens. A escolha entre uma pilha e uma lista depende das operações que precisam ser realizadas e da lógica do algoritmo ou aplicação em questão.",0
+O que é uma Pilha em Estrutura de dados ?,"Uma pilha é uma estrutura de dados baseada no conceito de pilha (stack em inglês), que segue o princípio LIFO (Last In, First Out), ou seja, o último elemento a entrar na pilha é o primeiro a sair. Nela, os elementos são empilhados um sobre os outros, obedecendo a uma regra de inserção e remoção, que é a de retirar o elemento que está no topo da pilha.
+
+As operações típicas em uma pilha são:
+
+Push (Inserir)**: Adicionar um elemento no topo da pilha.
+Pop (Remover)**: Remover o elemento do topo da pilha.
+Peek (Visualizar)**: Visualizar o elemento que está no topo da pilha, sem removê-lo.
+Empty**: Verificar se a pilha está vazia, ou seja, não tem elementos.
+Size**: Retornar o número de elementos na pilha.
+
+A pilha é amplamente utilizada em algoritmos que precisam de um controle de escopo de variáveis, como em compiladores, interpretadores de linguagens de programação e em sistemas de processamento em lote. Além disso, ela é útil em situações onde a ordem de remoção dos elementos não é importante ou não segue uma sequência específica.",1
