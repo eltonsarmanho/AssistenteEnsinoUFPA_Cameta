@@ -81,7 +81,7 @@ class LLMHandler:
                 else: df = self.update_dataset(df, nova_pergunta, resposta,0)
 
         # Após todas as atualizações, salvar o dataframe no arquivo CSV
-        df.to_csv('../dataset/dataset.csv', index=False)
+        df.to_csv('dataset/dataset.csv', index=False)
         return nova_pergunta,resposta,df
 
 

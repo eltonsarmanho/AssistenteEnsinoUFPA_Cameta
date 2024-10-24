@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import time
 
-from Interface.LLMHandler import LLMHandler
-from Interface.VerificadorDePerguntas import VerificadorDePerguntas
+from LLMHandler import LLMHandler
+from VerificadorDePerguntas import VerificadorDePerguntas
 
 from streamlit.web import cli as stcli
 from streamlit import runtime
@@ -35,7 +35,7 @@ def sistema_perguntas(escolha):
 
     # Carregar dataset (ou criar novo)
     try:
-        df = pd.read_csv('../dataset/dataset.csv')
+        df = pd.read_csv('dataset/dataset.csv')
     except FileNotFoundError:
         df = pd.DataFrame(columns=['Pergunta', 'Resposta'])
 
@@ -75,7 +75,7 @@ def sistema_perguntas(escolha):
 
     elif escolha == "Histórico":
         st.subheader("Histórico de Perguntas e Respostas")
-        df = pd.read_csv('../dataset/dataset.csv')
+        df = pd.read_csv('dataset/dataset.csv')
         df_historico = df[df['Classe'] == 1]
         df_historico = df_historico.drop('Classe', axis=1)
         st.dataframe(df_historico, height=400)
