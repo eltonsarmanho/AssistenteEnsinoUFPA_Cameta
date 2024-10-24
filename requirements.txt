@@ -1,7 +1,5 @@
-maritalk==0.2.6
+maritalk
 pandas
-numpy
+psycopg2_binary
 scikit_learn
 streamlit
-setuptools
-psycopg2
