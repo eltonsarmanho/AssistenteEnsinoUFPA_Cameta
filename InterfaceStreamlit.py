@@ -15,7 +15,7 @@ port = "6543"
 dbname = "postgres"
 user = "postgres.wrlwzbewagseuoisnmqz"
 password = "RR%EPQ^dCen6%fTo"
-
+db = QuestionarioDB(host, port, dbname, user, password)
 # Função principal que gera a interface com Streamlit
 def main():
     st.set_page_config(page_title="Sistema de Perguntas e Respostas", layout="wide")
@@ -57,20 +57,27 @@ def sistema_perguntas(escolha):
                     time.sleep(1)  # Simulação de tempo de processamento
 
                 # Verificar se já existe uma pergunta similar
+                inicio = time.time()
                 check = VerificadorDePerguntas(df, threshold=0.75)
                 pergunta_similar, resposta_similar = check.verificar_similaridade(pergunta)
 
                 if pergunta_similar:
+                    fim = time.time()
                     st.success("Pergunta similar encontrada!")
                     st.write(f"**Pergunta:** {pergunta_similar}")
                     st.write(f"**Resposta:** {resposta_similar}")
                 else:
                     # Gerar nova resposta e atualizar dataset
                     pergunta, resposta, df = llm.gerar_perguntas_e_atualizar_dataset(df, pergunta, 3)
+                    fim = time.time()
                     st.success("Nova pergunta gerada!")
                     st.write(f"**Pergunta:** {pergunta}")
                     st.write(f"**Resposta:** {resposta}")
                     df.to_csv('dataset.csv', index=False)
+                tempo_requisicao = (fim - inicio)*1000
+                db.conectar()
+                db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
+                db.fechar_conexao()
 
         if pergunta:
             if st.button("Avaliar Resposta"):
@@ -91,7 +98,7 @@ def sistema_perguntas(escolha):
 # Função para a página de avaliação
 def pagina_avaliacao():
     st.title("Avaliação da Resposta")
-    db = QuestionarioDB(host, port, dbname, user, password)
+
     db.conectar()
     st.subheader("Avalie a resposta que você recebeu")
     col1, col2 = st.columns(2)
