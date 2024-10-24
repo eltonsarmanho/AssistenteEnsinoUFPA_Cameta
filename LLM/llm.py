@@ -93,7 +93,7 @@ def gerar_perguntas_e_atualizar_dataset(df: pd.DataFrame, pergunta, n):
             df = update_dataset(df, nova_pergunta, resposta)
 
     # Após todas as atualizações, salvar o dataframe no arquivo CSV
-    df.to_csv('../dataset/dataset.csv', index=False)
+    df.to_csv('../dataset.csv', index=False)
     return nova_pergunta,resposta
 
 
