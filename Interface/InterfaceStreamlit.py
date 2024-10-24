@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import time
 
-from LLM.LLMHandler import LLMHandler
-from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
+from Interface.LLMHandler import LLMHandler
+from Interface.VerificadorDePerguntas import VerificadorDePerguntas
 
 from streamlit.web import cli as stcli
 from streamlit import runtime
