@@ -35,7 +35,7 @@ def sistema_perguntas(escolha):
 
     # Carregar dataset (ou criar novo)
     try:
-        df = pd.read_csv('../dataset.csv')
+        df = pd.read_csv('dataset.csv')
     except FileNotFoundError:
         df = pd.DataFrame(columns=['Pergunta', 'Resposta'])
 
@@ -63,7 +63,7 @@ def sistema_perguntas(escolha):
                     st.success("Nova pergunta gerada!")
                     st.write(f"**Pergunta:** {pergunta}")
                     st.write(f"**Resposta:** {resposta}")
-                    df.to_csv('../dataset.csv', index=False)
+                    df.to_csv('dataset.csv', index=False)
 
         if pergunta:
             if st.button("Avaliar Resposta"):
@@ -75,7 +75,7 @@ def sistema_perguntas(escolha):
 
     elif escolha == "Histórico":
         st.subheader("Histórico de Perguntas e Respostas")
-        df = pd.read_csv('../dataset.csv')
+        df = pd.read_csv('dataset.csv')
         df_historico = df[df['Classe'] == 1]
         df_historico = df_historico.drop('Classe', axis=1)
         st.dataframe(df_historico, height=400)
