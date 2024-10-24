@@ -75,6 +75,7 @@ def sistema_perguntas(escolha):
 
     elif escolha == "Histórico":
         st.subheader("Histórico de Perguntas e Respostas")
+
         df = pd.read_csv('dataset.csv')
         df_historico = df[df['Classe'] == 1]
         df_historico = df_historico.drop('Classe', axis=1)
