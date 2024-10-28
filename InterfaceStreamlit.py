@@ -10,6 +10,9 @@ from streamlit.web import cli as stcli
 from streamlit import runtime
 import sys
 
+
+
+
 host = "aws-0-sa-east-1.pooler.supabase.com"
 port = "6543"
 dbname = "postgres"
@@ -17,6 +20,7 @@ user = "postgres.wrlwzbewagseuoisnmqz"
 password = "RR%EPQ^dCen6%fTo"
 db = QuestionarioDB(host, port, dbname, user, password)
 # Função principal que gera a interface com Streamlit
+
 def main():
     st.set_page_config(page_title="Sistema de Perguntas e Respostas", layout="wide")
 
