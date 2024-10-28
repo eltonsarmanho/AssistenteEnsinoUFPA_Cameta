@@ -1,0 +1,6 @@
+maritalk
+pip-chill
+pipreqs
+psycopg2-binary
+scikit-learn
+streamlit
