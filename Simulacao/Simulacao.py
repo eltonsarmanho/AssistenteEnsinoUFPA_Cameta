@@ -1,16 +1,22 @@
 import pandas as pd
 import time
 
-from LLMHandler import LLMHandler
+from LLM.LLMHandler import LLMHandler
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
 import json
 
+import os
 
 
 if __name__ == '__main__':
-    # Carregar dataset (ou criar novo)
+
     # Abra e leia o arquivo JSON
-    with open('Keys/config.json', 'r') as file:
+    # Caminho absoluto para o arquivo JSON
+    project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
+    file_path = os.path.join(project_root, '..', 'Keys', 'config.json')
+
+    # Abra e leia o arquivo JSON
+    with open(file_path, 'r') as file:
         config = json.load(file)
 
     minha_chave = config['minha_chave']

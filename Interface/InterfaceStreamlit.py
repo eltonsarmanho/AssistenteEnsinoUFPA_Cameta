@@ -2,20 +2,24 @@ import streamlit as st
 import pandas as pd
 import time
 
-from LLMHandler import LLMHandler
+from LLM.LLMHandler import LLMHandler
 from Load.QuestionarioDB import QuestionarioDB
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
 
 from streamlit.web import cli as stcli
 from streamlit import runtime
 import sys
-
+import os
 import json
 
 # Abra e leia o arquivo JSON
-with open('Keys/config.json', 'r') as file:
-    config = json.load(file)
+# Caminho absoluto para o arquivo JSON
+project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
+file_path = os.path.join(project_root,'..' ,'Keys', 'config.json')
 
+# Abra e leia o arquivo JSON
+with open(file_path, 'r') as file:
+    config = json.load(file)
 # Acesse os valores no dicionário
 host = config['host']
 port = config['port']

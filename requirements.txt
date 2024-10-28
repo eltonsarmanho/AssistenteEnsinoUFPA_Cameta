@@ -1,5 +1,0 @@
-maritalk
-pandas
-psycopg2_binary
-scikit_learn
-streamlit
