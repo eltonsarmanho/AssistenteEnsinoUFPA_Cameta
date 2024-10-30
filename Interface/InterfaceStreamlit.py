@@ -58,7 +58,7 @@ def sistema_perguntas(escolha):
 
     # Carregar dataset (ou criar novo)
     try:
-        df = pd.read_csv('dataset.csv')
+        df = pd.read_csv(file_path_dataset)
     except FileNotFoundError:
         df = pd.DataFrame(columns=['Pergunta', 'Resposta'])
 
