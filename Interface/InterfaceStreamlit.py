@@ -28,6 +28,9 @@ user = config['user']
 password = config['password']
 minha_chave = config['minha_chave']
 
+project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
+file_path_dataset = os.path.join(project_root, '..', 'dataset', 'dataset.csv')
+
 db = QuestionarioDB(host, port, dbname, user, password)
 # Função principal que gera a interface com Streamlit
 def main():
@@ -103,7 +106,7 @@ def sistema_perguntas(escolha):
     elif escolha == "Histórico":
         st.subheader("Histórico de Perguntas e Respostas")
 
-        df = pd.read_csv('dataset.csv')
+        df = pd.read_csv(file_path_dataset)
         df_historico = df[df['Classe'] == 1]
         df_historico = df_historico.drop('Classe', axis=1)
         st.dataframe(df_historico, height=400)

@@ -1,9 +1,12 @@
 import pandas as pd
 import maritalk
 import re
-
+import sys
+import os
 class LLMHandler:
     def __init__(self, chave):
+        project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
+        self.file_path = os.path.join(project_root, '..', 'dataset', 'dataset.csv')
         self.model = maritalk.MariTalk(
             key=chave,
             model="sabia-2-small"
@@ -81,7 +84,7 @@ class LLMHandler:
                 else: df = self.update_dataset(df, nova_pergunta, resposta,0)
 
         # Após todas as atualizações, salvar o dataframe no arquivo CSV
-        df.to_csv('dataset.csv', index=False)
+        df.to_csv(self.file_path, index=False)
         return nova_pergunta,resposta,df
 
 
