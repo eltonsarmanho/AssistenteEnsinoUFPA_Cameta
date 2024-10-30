@@ -28,9 +28,9 @@ user = config['user']
 password = config['password']
 minha_chave = config['minha_chave']
 
+
 project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
 file_path_dataset = os.path.join(project_root, '..', 'dataset', 'dataset.csv')
-
 db = QuestionarioDB(host, port, dbname, user, password)
 # Função principal que gera a interface com Streamlit
 def main():
@@ -58,8 +58,10 @@ def sistema_perguntas(escolha):
 
     # Carregar dataset (ou criar novo)
     try:
+
         df = pd.read_csv(file_path_dataset)
-    except FileNotFoundError:
+    except FileNotFoundError as e:
+        print(e)
         df = pd.DataFrame(columns=['Pergunta', 'Resposta'])
 
     if escolha == "Sistema de Perguntas":
@@ -89,7 +91,7 @@ def sistema_perguntas(escolha):
                     st.success("Nova pergunta gerada!")
                     st.write(f"**Pergunta:** {pergunta}")
                     st.write(f"**Resposta:** {resposta}")
-                    df.to_csv('dataset.csv', index=False)
+
                 tempo_requisicao = (fim - inicio)*1000
                 db.conectar()
                 db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
