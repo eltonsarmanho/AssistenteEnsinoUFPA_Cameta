@@ -1,39 +1,35 @@
-import streamlit as st
+
 import pandas as pd
+import streamlit as st
 import time
 
-from LLM.LLMHandler import LLMHandler
-from Load.QuestionarioDB import QuestionarioDB
+from LLM.AgenteLLM import QAGenerator
+from Load.QuestionarioFirebase import QuestionarioFirebase
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
 
 from streamlit.web import cli as stcli
 from streamlit import runtime
 import sys
 import os
-import json
-
-# Abra e leia o arquivo JSON
-# Caminho absoluto para o arquivo JSON
-project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
-file_path = os.path.join(project_root,'..' ,'Keys', 'config.json')
-
-# Abra e leia o arquivo JSON
-with open(file_path, 'r') as file:
-    config = json.load(file)
-# Acesse os valores no dicionário
-host = config['host']
-port = config['port']
-dbname = config['dbname']
-user = config['user']
-password = config['password']
-minha_chave = config['minha_chave']
 
 
+# Abra e leia o arquivo csv
 project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
 file_path_dataset = os.path.join(project_root, '..', 'dataset', 'dataset.csv')
-db = QuestionarioDB(host, port, dbname, user, password)
+
+# Parâmetros de conexão ao Firebase
+file = "coletadados-f1884-firebase-adminsdk-itqt9-73bd934db1.json"
+project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
+cred_path = os.path.join(project_root, '..', 'Keys', file)
+database_url = "https://coletadados-f1884-default-rtdb.firebaseio.com/"
+# Instancia a classe e conecta ao Firebase
+db = QuestionarioFirebase(cred_path, database_url)
+    # Conecta ao Firebase
+db.conectar()
 # Função principal que gera a interface com Streamlit
 def main():
+
+
     st.set_page_config(page_title="Sistema de Perguntas e Respostas", layout="wide")
 
     # Inicializar página
@@ -53,8 +49,7 @@ def main():
 def sistema_perguntas(escolha):
     st.title("🧠 Sistema de Perguntas e Respostas")
 
-
-    llm = LLMHandler(minha_chave)
+    llm = QAGenerator(n_perguntas=3,arquivo_csv=file_path_dataset)
 
     # Carregar dataset (ou criar novo)
     try:
@@ -62,7 +57,7 @@ def sistema_perguntas(escolha):
         df = pd.read_csv(file_path_dataset)
     except FileNotFoundError as e:
         print(e)
-        df = pd.DataFrame(columns=['Pergunta', 'Resposta'])
+        df = pd.DataFrame(columns=['original_pergunta','Pergunta', 'Resposta'])
 
     if escolha == "Sistema de Perguntas":
         st.subheader("Faça sua pergunta")
@@ -86,16 +81,14 @@ def sistema_perguntas(escolha):
                     st.write(f"**Resposta:** {resposta_similar}")
                 else:
                     # Gerar nova resposta e atualizar dataset
-                    pergunta, resposta, df = llm.gerar_perguntas_e_atualizar_dataset(df, pergunta, 3)
+                    resultado = llm.generate_qa(pergunta)
                     fim = time.time()
                     st.success("Nova pergunta gerada!")
-                    st.write(f"**Pergunta:** {pergunta}")
-                    st.write(f"**Resposta:** {resposta}")
+                    st.write(f"**Pergunta:** {resultado[0]['pergunta']}")
+                    st.write(f"**Resposta:** {resultado[0]['resposta']}")
 
                 tempo_requisicao = (fim - inicio)*1000
-                db.conectar()
                 db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
-                db.fechar_conexao()
 
         if pergunta:
             if st.button("Avaliar Resposta"):
@@ -109,15 +102,12 @@ def sistema_perguntas(escolha):
         st.subheader("Histórico de Perguntas e Respostas")
 
         df = pd.read_csv(file_path_dataset)
-        df_historico = df[df['Classe'] == 1]
-        df_historico = df_historico.drop('Classe', axis=1)
-        st.dataframe(df_historico, height=400)
+        st.dataframe(df[['pergunta', 'resposta']], height=400)
 
 # Função para a página de avaliação
 def pagina_avaliacao():
     st.title("Avaliação da Resposta")
 
-    db.conectar()
     st.subheader("Avalie a resposta que você recebeu")
     col1, col2 = st.columns(2)
 
@@ -135,10 +125,10 @@ def pagina_avaliacao():
     if st.button("Enviar Avaliação"):
         try:
         # Insere dados na tabela Questionario
-            db.inserir_dados(qualidade_resposta, tempo_resposta)
+            db.inserir_dados_questionario(qualidade_resposta, tempo_resposta)
         except Exception as error:
             print(f"Erro: {error}")
-        finally: db.fechar_conexao()
+
         st.write(f"Você avaliou a **qualidade** da resposta com {qualidade_resposta} estrelas.")
         st.write(f"Você avaliou o **tempo** de resposta com {tempo_resposta} estrelas.")
         st.session_state.page = 'perguntas'  # Retorna à página de perguntas após avaliar

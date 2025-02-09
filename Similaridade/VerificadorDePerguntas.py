@@ -16,7 +16,7 @@ class VerificadorDePerguntas:
             return None, None
 
         # Vetorizar as perguntas no dataset e a nova pergunta
-        tfidf = self.vectorizer.fit_transform(self.df['Pergunta'].tolist() + [pergunta])
+        tfidf = self.vectorizer.fit_transform(self.df['pergunta'].tolist() + [pergunta])
         # Calcular a similaridade de cosseno
         cosine_similarities = cosine_similarity(tfidf[-1], tfidf[:-1]).flatten()
 
@@ -26,8 +26,8 @@ class VerificadorDePerguntas:
 
         # Se a similaridade for maior que o threshold, retornar a pergunta e a resposta associada
         if similaridade_max > self.threshold:
-            pergunta_similar = self.df.iloc[idx_similar]['Pergunta']
-            resposta_similar = self.df.iloc[idx_similar]['Resposta']
+            pergunta_similar = self.df.iloc[idx_similar]['pergunta']
+            resposta_similar = self.df.iloc[idx_similar]['resposta']
             return pergunta_similar, resposta_similar
 
         return None, None
