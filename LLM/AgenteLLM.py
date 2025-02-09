@@ -14,7 +14,7 @@ load_dotenv()
 
 class QAGenerator:
     def __init__(self, n_perguntas=3, arquivo_csv='dataset.csv'):
-        self.n_perguntas = n_perguntas
+        self.n_perguntas = n_perguntas + 1  # +1 para incluir a original
         self.arquivo_csv = arquivo_csv
         self._inicializar_modelo()
         self._criar_arquivo_se_nao_existir()
@@ -24,27 +24,28 @@ class QAGenerator:
             model="sabia-3",
             api_key=os.getenv("MARITALK_API_KEY"),
             temperature=0.7,
-            max_tokens=400
+            max_tokens=600  # Aumentado para comportar mais perguntas
         )
 
         self.prompt_template = ChatPromptTemplate.from_messages([
             ("system",
-             f"""Você é um gerador de perguntas e respostas relacionadas.
-             Para cada pergunta recebida, gere {self.n_perguntas} perguntas similares 
-             com respostas correspondentes.
-
-             Formato obrigatório:
-             {self._format_example()}"""),
-            ("human", "Pergunta original: {pergunta}")
+             f"""Você é um gerador de perguntas e respostas. Siga estas regras:
+             1. Sempre comece respondendo a pergunta original
+             2. Em seguida, gere {self.n_perguntas - 1} perguntas relacionadas
+             3. Formato obrigatório:
+                Pergunta 1: [resposta à pergunta original]
+                Resposta 1: [resposta detalhada]
+                {self._format_example(start=2)}"""),
+            ("human", "{pergunta}")
         ])
 
         self.chain = self.prompt_template | self.llm | StrOutputParser()
 
-    def _format_example(self):
+    def _format_example(self, start=2):
         example = []
-        for i in range(1, self.n_perguntas + 1):
-            example.append(f"Pergunta {i}: [texto]")
-            example.append(f"Resposta {i}: [texto]")
+        for i in range(start, self.n_perguntas + 1):
+            example.append(f"Pergunta {i}: [pergunta relacionada]")
+            example.append(f"Resposta {i}: [resposta correspondente]")
         return "\n".join(example)
 
     def _criar_arquivo_se_nao_existir(self):
@@ -54,34 +55,35 @@ class QAGenerator:
                 writer.writeheader()
 
     def _cabecalhos(self):
-        return ['original_pergunta', 'pergunta', 'resposta', 'data_criacao']
+        return ['pergunta', 'resposta', 'data_criacao']
 
-    def generate_qa(self, pergunta):
-        response = self.chain.invoke({"pergunta": pergunta})
+    def generate_qa(self, pergunta_original):
+        response = self.chain.invoke({"pergunta": pergunta_original})
         qa_pairs = self._parse_response(response)
-        self._salvar_no_csv(pergunta, qa_pairs)
+        self._salvar_no_csv(qa_pairs)
         return qa_pairs
 
     def _parse_response(self, response):
         qa_pairs = []
         blocks = [b.strip() for b in response.split("\n\n") if b.strip()]
 
-        for block in blocks[:self.n_perguntas]:
+        for block in blocks[:self.n_perguntas]:  # Pega todas as perguntas
             lines = block.split("\n")
             if len(lines) >= 2:
                 pergunta = lines[0].split(": ", 1)[1].strip()
                 resposta = lines[1].split(": ", 1)[1].strip()
-                qa_pairs.append({"pergunta": pergunta, "resposta": resposta})
-
+                qa_pairs.append({
+                    "pergunta": pergunta,
+                    "resposta": resposta
+                })
         return qa_pairs
 
-    def _salvar_no_csv(self, pergunta_original, qa_pairs):
+    def _salvar_no_csv(self, qa_pairs):
         with open(self.arquivo_csv, 'a', newline='', encoding='utf-8') as file:
             writer = csv.DictWriter(file, fieldnames=self._cabecalhos())
 
             for par in qa_pairs:
                 writer.writerow({
-                    'original_pergunta': pergunta_original,
                     'pergunta': par['pergunta'],
                     'resposta': par['resposta'],
                     'data_criacao': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
