@@ -8,7 +8,7 @@ import os
 import json
 
 
-class QuestionarioFirebase:
+class ConexaoFirebase:
     def __init__(self, cred_path, database_url):
         self.cred_path = cred_path
         self.database_url = database_url
@@ -177,7 +177,7 @@ if __name__ == '__main__':
     # Acesse os valores no dicionário
     database_url = config['database_url']
     # Instancia a classe e conecta ao Firebase
-    firebase_db = QuestionarioFirebase(cred_path, database_url)
+    firebase_db = ConexaoFirebase(cred_path, database_url)
 
     try:
         firebase_db.conectar()

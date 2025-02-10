@@ -4,7 +4,7 @@ import streamlit as st
 import time
 
 from LLM.QAGenerator import QAGenerator
-from Database.QuestionarioFirebase import QuestionarioFirebase
+from Database.ConexaoFirebase import ConexaoFirebase
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
 
 from streamlit.web import cli as stcli
@@ -20,7 +20,7 @@ with open(cred_path, 'r') as file:
 # Acesse os valores no dicionário
 database_url = config['database_url']
 # Instancia a classe e conecta ao Firebase
-db = QuestionarioFirebase(cred_path, database_url)
+db = ConexaoFirebase(cred_path, database_url)
 # Conecta ao Firebase
 db.conectar()
 # Função principal que gera a interface com Streamlit
