@@ -10,13 +10,13 @@ O **Assistente de Ensino UFPA Cametá** foi desenvolvido para automatizar respos
 
 ## Funcionalidades
 
-- **Respostas Automatizadas**: O assistente utiliza um modelo de linguagem, Sabiá 3, para fornecer respostas com precisão.
+- **Respostas Automatizadas**: O assistente utiliza um modelo de linguagem(Sabiá 3, Gemini ou outro), para fornecer respostas com precisão.
 - **Fácil Acesso**: Disponível como uma ferramenta online, facilitando o acesso dos alunos às informações essenciais.
   
 ## Tecnologias Utilizadas
 
 - **Python**: Linguagem base do projeto para processamento de linguagem.
-- **Sabiá 3.0 e Maritaca**: Modelos de linguagem para geração de respostas.
+- **LLM**: Modelos de linguagem para geração de respostas.
 
 ## Estrutura do Projeto
 
@@ -24,7 +24,7 @@ A arquitetura do sistema é dividida em três módulos principais:
 
 1. **Cliente**: Interface de interação com o usuário.
 2. **Servidor e Dataset**: Processamento de dados e armazenamento.
-3. **API do Sabiá 3.0**: Integração com o modelo de linguagem para fornecer respostas em tempo real.
+3. **API**: Integração com o modelo de linguagem para fornecer respostas em tempo real.
 
 ## Instalação e Configuração
 
