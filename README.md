@@ -1,7 +1,3 @@
-Se o seu projeto utiliza o **Firebase** como banco de dados, é importante destacar isso no README para que os usuários e colaboradores saibam como o sistema está estruturado e como configurar o Firebase corretamente. Abaixo está uma versão atualizada do README com a inclusão do Firebase como banco de dados:
-
----
-
 # Assistente de Ensino UFPA Cametá
 
 Este repositório contém o projeto **Assistente de Ensino UFPA Cametá**, uma ferramenta de apoio acadêmico desenvolvida para atender dúvidas frequentes dos estudantes da Faculdade de Sistemas de Informação da Universidade Federal do Pará (UFPA) - Campus Cametá. O assistente utiliza inteligência artificial e processamento de linguagem natural para fornecer respostas precisas e acessíveis sobre disciplinas e outros tópicos relacionados ao curso.
