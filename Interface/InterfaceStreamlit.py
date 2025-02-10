@@ -13,10 +13,6 @@ import sys
 import os
 import json
 
-# Abra e leia o arquivo csv
-project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
-file_path_dataset = os.path.join(project_root, '..', 'dataset', 'dataset.csv')
-
 project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do json atual
 cred_path = os.path.join(project_root,'..', 'Keys', 'coletadados-firebase.json')
 with open(cred_path, 'r') as file:
@@ -32,6 +28,11 @@ def main():
 
 
     st.set_page_config(page_title="Sistema de Perguntas e Respostas", layout="wide")
+
+    # Inicializar o gerador LLM uma única vez
+    if 'llm' not in st.session_state:
+        st.session_state.llm = QAGenerator(n_perguntas=3,model_name='google')  # Instância única
+        #st.session_state['llm'] = QAGenerator(n_perguntas=3)  # Instância única
 
     # Inicializar página
     if 'page' not in st.session_state:
@@ -49,9 +50,6 @@ def main():
 # Função para a página do sistema de perguntas
 def sistema_perguntas(escolha):
     st.title("🧠 Sistema de Perguntas e Respostas")
-
-
-
 
     if escolha == "Sistema de Perguntas":
         st.subheader("Faça sua pergunta")
@@ -75,11 +73,9 @@ def sistema_perguntas(escolha):
                      st.write(f"**Pergunta:** {pergunta_similar}")
                      st.write(f"**Resposta:** {resposta_similar}")
                 else:
-
                     # Gerar nova resposta e atualizar dataset
-                    llm = QAGenerator(n_perguntas=3)
+                    resultado = st.session_state.llm.generate_qa(pergunta)  # Modificação aqui
 
-                    resultado = llm.generate_qa(pergunta)
                     fim = time.time()
                     st.success("Nova pergunta gerada!")
                     st.write(f"**Pergunta:** {resultado[0]['pergunta']}")

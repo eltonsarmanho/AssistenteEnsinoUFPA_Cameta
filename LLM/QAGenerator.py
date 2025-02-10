@@ -4,27 +4,52 @@ import csv
 import os
 from datetime import datetime
 from langchain_community.chat_models import ChatMaritalk
+from langchain_community.chat_models import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts.chat import ChatPromptTemplate
 from dotenv import load_dotenv
 import pytz  # Adicione esta linha
+import google.generativeai as genai
 
 load_dotenv()
+import os
 
+# Suppress logging warnings
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
 
 class QAGenerator:
-    def __init__(self, n_perguntas=3):
+    def __init__(self, n_perguntas=3,model_name="maritalk"):
         self.n_perguntas = n_perguntas + 1  # +1 para incluir a original
+        self.model_name = model_name.lower()  # Nome do modelo escolhido
         self._inicializar_modelo()
 
     def _inicializar_modelo(self):
-        self.llm = ChatMaritalk(
-            model="sabia-3",
-            api_key=os.getenv("MARITALK_API_KEY"),
-            temperature=0.7,
-            max_tokens=600  # Aumentado para comportar mais perguntas
-        )
-
+        if self.model_name == "maritalk":
+            self.llm = ChatMaritalk(
+                model="sabia-3",
+                api_key=os.getenv("MARITALK_API_KEY"),
+                temperature=0.7,
+                max_tokens=600  # Aumentado para comportar mais perguntas
+            )
+        elif self.model_name == "google":
+            self.llm = ChatGoogleGenerativeAI(
+                model="gemini-1.5-flash",transport='rest',
+                google_api_key=os.getenv("GOOGLE_API_KEY"),
+                top_p=0.30 ,
+                max_output_tokens=600# Aumentado para comportar mais perguntas
+            )
+        elif self.model_name == "openai":
+            self.llm = ChatOpenAI(
+                model="gpt-3.5-turbo",  # Ou outro modelo OpenAI desejado
+                openai_api_key=os.getenv("OPENAI_API_KEY"),
+                temperature=0.7, max_tokens=600
+            )
+        else:
+            raise ValueError(
+                f"Modelo '{self.model_name}' não suportado. Escolha entre 'maritalk', 'google' ou 'openai'.")
         self.prompt_template = ChatPromptTemplate.from_messages([
             ("system",
              f"""Você é um gerador de perguntas e respostas. Siga estas regras:
@@ -51,7 +76,6 @@ class QAGenerator:
     def generate_qa(self, pergunta_original):
         response = self.chain.invoke({"pergunta": pergunta_original})
         qa_pairs = self._parse_response(response)
-        #self._salvar_no_csv(qa_pairs)
         return qa_pairs
 
     def _parse_response(self, response):
@@ -69,13 +93,10 @@ class QAGenerator:
                 })
         return qa_pairs
 
-
-
-
 # Exemplo de uso
 if __name__ == "__main__":
     # Cria o gerador e especifica o arquivo
-    gerador = QAGenerator(n_perguntas=3)
+    gerador = QAGenerator(n_perguntas=3,model_name='google')
 
     # Gera e salva automaticamente
     #resultado = gerador.generate_qa("o que é machine learning?")

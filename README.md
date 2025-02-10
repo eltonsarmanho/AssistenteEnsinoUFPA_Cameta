@@ -16,7 +16,7 @@ O **Assistente de Ensino UFPA Cametá** foi desenvolvido para automatizar respos
 ## Tecnologias Utilizadas
 
 - **Python**: Linguagem base do projeto para processamento de linguagem.
-- **Sabiá 2 e Maritaca**: Modelos de linguagem para geração de respostas.
+- **Sabiá 3.0 e Maritaca**: Modelos de linguagem para geração de respostas.
 
 ## Estrutura do Projeto
 
@@ -24,7 +24,7 @@ A arquitetura do sistema é dividida em três módulos principais:
 
 1. **Cliente**: Interface de interação com o usuário.
 2. **Servidor e Dataset**: Processamento de dados e armazenamento.
-3. **API do Sabiá 2**: Integração com o modelo de linguagem para fornecer respostas em tempo real.
+3. **API do Sabiá 3.0**: Integração com o modelo de linguagem para fornecer respostas em tempo real.
 
 ## Instalação e Configuração
 
@@ -38,7 +38,7 @@ Para rodar o projeto localmente, siga os passos abaixo:
     ```bash
     pip install -r requirements.txt
     ```
-3. Configure a API do Sabiá 2 conforme instruções internas.
+3. Configure a API do Sabiá 3.0 conforme instruções internas.
 
 ## Contribuição
 
