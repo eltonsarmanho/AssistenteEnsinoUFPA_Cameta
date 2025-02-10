@@ -4,7 +4,7 @@ import streamlit as st
 import time
 
 from LLM.QAGenerator import QAGenerator
-from Load.QuestionarioFirebase import QuestionarioFirebase
+from Database.QuestionarioFirebase import QuestionarioFirebase
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
 
 from streamlit.web import cli as stcli
