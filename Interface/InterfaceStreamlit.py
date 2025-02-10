@@ -2,7 +2,8 @@
 import pandas as pd
 import streamlit as st
 import time
-
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from LLM.QAGenerator import QAGenerator
 from Database.ConexaoFirebase import ConexaoFirebase
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
@@ -80,8 +81,11 @@ def sistema_perguntas(escolha):
                     st.success("Nova pergunta gerada!")
                     st.write(f"**Pergunta:** {resultado[0]['pergunta']}")
                     st.write(f"**Resposta:** {resultado[0]['resposta']}")
-                    for i, par in enumerate(resultado, 1):
-                        db.inserir_dados_questao(par['pergunta'], par['resposta'])
+                    # Armazena no session_state
+                    st.session_state.pergunta_atual = resultado[0]['pergunta']
+                    st.session_state.resposta_atual = resultado[0]['resposta']
+                    st.session_state.resultado = resultado
+
 
                 tempo_requisicao = (fim - inicio)*1000
                 db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
@@ -105,34 +109,60 @@ def sistema_perguntas(escolha):
 # Função para a página de avaliação
 def pagina_avaliacao():
     st.title("Avaliação da Resposta")
-
     st.subheader("Avalie a resposta que você recebeu")
-    col1, col2 = st.columns(2)
 
+    col1, col2 = st.columns(2)
     with col1:
         # Avaliação de qualidade da resposta
         st.write("Qualidade da resposta:")
         qualidade_resposta = st.radio("Avalie de 1 a 5 estrelas", [1, 2, 3, 4, 5], index=2, key="qualidade")
-
     with col2:
         # Avaliação do tempo de resposta
         st.write("Tempo de resposta:")
         tempo_resposta = st.radio("Avalie de 1 a 5 estrelas", [1, 2, 3, 4, 5], index=2, key="tempo")
 
-    # Botão para enviar avaliação e voltar para o sistema de perguntas
+    # Opção para reportar erro
+    st.subheader("Reportar Erro")
+    erro_reportado = st.checkbox("A resposta estava incorreta ou insuficiente?")
+    if erro_reportado:
+        # Recupera a pergunta e resposta do session_state
+        pergunta = st.session_state.get('pergunta_atual', None)
+        resposta = st.session_state.get('resposta_atual', None)
+        st.write("Por favor, forneça mais detalhes sobre o erro:")
+        detalhes_erro = st.text_area("Detalhes do erro:")
+        if st.button("Enviar Relatório de Erro"):
+            try:
+                # Salva a resposta incorreta no Firebase
+                db.inserir_dados_resposta_incorreta(pergunta, resposta)
+                st.success("Erro reportado com sucesso! Uma nova resposta será gerada.")
+
+                # Gera uma nova resposta revisada
+                nova_resposta = st.session_state.llm.gerar_resposta_revisada(pergunta, contexto_adicional=detalhes_erro)
+                st.write("**Nova Resposta Revisada:**")
+                st.write(nova_resposta)
+
+                # Atualiza a resposta no Firebase
+                db.substituir_resposta_corrigida(pergunta, nova_resposta)
+                st.success("Resposta corrigida atualizada no sistema!")
+            except Exception as error:
+                st.error(f"Erro ao processar o relatório de erro: {error}")
+
+    # Botão para enviar avaliação normal
     if st.button("Enviar Avaliação"):
         try:
-        # Insere dados na tabela Questionario
-            db.inserir_dados_questionario(qualidade_resposta, tempo_resposta)
+           resultado = st.session_state.resultado
+           for i, par in enumerate(resultado, 1):
+                db.inserir_dados_questao(par['pergunta'], par['resposta'])
+           db.inserir_dados_questionario(qualidade_resposta, tempo_resposta)
+           # Iniciar thread
+           st.write(f"Você avaliou a **qualidade** da resposta com {qualidade_resposta} estrelas.")
+           st.write(f"Você avaliou o **tempo** de resposta com {tempo_resposta} estrelas.")
+           st.session_state.page = 'perguntas'
+           with st.spinner('Registrando Avaliação...'):
+               time.sleep(3)
+           st.rerun()
         except Exception as error:
-            print(f"Erro: {error}")
-
-        st.write(f"Você avaliou a **qualidade** da resposta com {qualidade_resposta} estrelas.")
-        st.write(f"Você avaliou o **tempo** de resposta com {tempo_resposta} estrelas.")
-        st.session_state.page = 'perguntas'  # Retorna à página de perguntas após avaliar
-        with st.spinner('Registrando Avaliação...'):
-            time.sleep(3)  # Simulação de tempo de processamento
-        st.rerun()  # Recarrega a página para refletir a mudança de estado
+            st.error(f"Erro ao registrar avaliação: {error}")
 
 if __name__ == '__main__':
     if runtime.exists():

@@ -1,7 +1,7 @@
 import os
 from langchain_community.chat_models import ChatMaritalk, ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.output_parsers import BaseOutputParser
+from langchain_core.output_parsers import BaseOutputParser, StrOutputParser
 from langchain_core.prompts.chat import ChatPromptTemplate
 from dotenv import load_dotenv
 
@@ -105,7 +105,21 @@ class QAGenerator:
         # Invoca a cadeia e retorna diretamente o dicionário
         return self.chain.invoke({"pergunta": pergunta_original})
 
-
+    def gerar_resposta_revisada(self, pergunta, contexto_adicional=None):
+        """
+        Gera uma resposta revisada para uma pergunta com base no feedback do usuário.
+        """
+        prompt_template = ChatPromptTemplate.from_messages([
+            ("system",
+             f"""Você é um assistente de correção de erros. Sua tarefa é gerar uma resposta revisada para a seguinte pergunta:
+             Pergunta: {pergunta}
+             Contexto adicional (se houver): {contexto_adicional or 'Nenhum'}
+             Certifique-se de fornecer uma resposta clara e precisa."""),
+            ("human", "{pergunta}")
+        ])
+        chain = prompt_template | self.llm | StrOutputParser()
+        resposta_revisada = chain.invoke({"pergunta": pergunta})
+        return resposta_revisada
 # Exemplo de uso
 if __name__ == "__main__":
     # Cria o gerador e especifica o arquivo

@@ -66,7 +66,6 @@ class ConexaoFirebase:
                 'Pergunta': pergunta,
                 'Resposta': resposta
             }).key
-            print(f"Dados inseridos no 'Questao' com ID: {novo_id}")
         except Exception as error:
             print(f"Erro ao inserir dados no 'Questao': {error}")
 
@@ -136,27 +135,36 @@ class ConexaoFirebase:
             print(f"Erro ao listar dados do 'Questao': {error}")
             return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro
 
-    # Método genérico para salvar os dados de uma tabela em CSV
-    def salvar_tabela_em_csv(self, nome_tabela, nome_arquivo_csv):
+    def inserir_dados_resposta_incorreta(self, pergunta, resposta_incorreta):
+        """
+        Insere uma resposta incorreta na tabela 'RespostasIncorretas'.
+        """
         try:
-            tabela_ref = db.reference(nome_tabela)
-            dados = tabela_ref.get()
-            if not dados:
-                print(f"Nenhum dado encontrado na tabela '{nome_tabela}'.")
-                return
-
-            # Extrai colunas dos dados
-            colunas = list(next(iter(dados.values())).keys())
-
-            # Salva em arquivo CSV
-            with open(nome_arquivo_csv, mode="w", newline="", encoding="utf-8") as arquivo_csv:
-                escritor_csv = csv.writer(arquivo_csv)
-                escritor_csv.writerow(colunas)  # Escreve os cabeçalhos
-                for key, value in dados.items():
-                    escritor_csv.writerow([value[col] for col in colunas])  # Escreve os dados
-            print(f"Dados da tabela '{nome_tabela}' salvos com sucesso no arquivo {nome_arquivo_csv}!")
+            respostas_incorretas_ref = db.reference('RespostasIncorretas')
+            novo_id = respostas_incorretas_ref.push({
+                'Pergunta': pergunta,
+                'RespostaIncorreta': resposta_incorreta
+            }).key
+            print(f"Resposta incorreta registrada com ID: {novo_id}")
         except Exception as error:
-            print(f"Erro ao salvar dados da tabela '{nome_tabela}' no CSV: {error}")
+            print(f"Erro ao registrar resposta incorreta: {error}")
+
+    def substituir_resposta_corrigida(self, pergunta, nova_resposta):
+        """
+        Substitui uma resposta incorreta pela versão corrigida na tabela 'Questao'.
+        """
+        try:
+            questao_ref = db.reference('Questao')
+            dados = questao_ref.get()
+            if dados:
+                for key, value in dados.items():
+                    if value['Pergunta'] == pergunta:
+                        questao_ref.child(key).update({'Resposta': nova_resposta})
+                        print(f"Resposta corrigida para a pergunta '{pergunta}' atualizada com sucesso!")
+                        return
+            print("Pergunta não encontrada na tabela 'Questao'.")
+        except Exception as error:
+            print(f"Erro ao substituir resposta corrigida: {error}")
 
     def fechar_conexao(self):
         try:
