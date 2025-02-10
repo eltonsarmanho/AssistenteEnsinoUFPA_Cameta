@@ -14,7 +14,7 @@ data = pd.read_csv('../dataset/dados_questionario.csv')
 df = pd.DataFrame(data)
 df.rename(columns={"tempo": "Tempo", "qualidade": "Qualidade"},inplace=True)
 
-metrica = 'Tempo'
+metrica = 'Qualidade'
 # Calcular as porcentagens de cada valor de qualidade
 qualidade_percent = df[metrica].value_counts(normalize=True).sort_index() * 100
 
@@ -26,7 +26,7 @@ plt.xlabel('{0} (1 a 5)'.format(metrica),fontsize=14)
 plt.ylabel('Porcentagem de Avaliações (%)',fontsize=14)
 plt.xticks(fontsize=14)  # Aumentar o tamanho das marcas no eixo X
 plt.yticks(fontsize=14)  # Aumentar o tamanho das marcas no eixo Y
-plt.grid(False)
+plt.grid(True)
 
 # Exibir o gráfico
 plt.show()
