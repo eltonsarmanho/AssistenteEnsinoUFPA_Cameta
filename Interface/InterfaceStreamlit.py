@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 import time
 
-from LLM.AgenteLLM import QAGenerator
+from LLM.QAGenerator import QAGenerator
 from Load.QuestionarioFirebase import QuestionarioFirebase
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
 
@@ -11,20 +11,21 @@ from streamlit.web import cli as stcli
 from streamlit import runtime
 import sys
 import os
-
+import json
 
 # Abra e leia o arquivo csv
 project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
 file_path_dataset = os.path.join(project_root, '..', 'dataset', 'dataset.csv')
 
-# Parâmetros de conexão ao Firebase
-file = "coletadados-f1884-firebase-adminsdk-itqt9-73bd934db1.json"
-project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
-cred_path = os.path.join(project_root, '..', 'Keys', file)
-database_url = "https://coletadados-f1884-default-rtdb.firebaseio.com/"
+project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do json atual
+cred_path = os.path.join(project_root,'..', 'Keys', 'coletadados-firebase.json')
+with open(cred_path, 'r') as file:
+    config = json.load(file)
+# Acesse os valores no dicionário
+database_url = config['database_url']
 # Instancia a classe e conecta ao Firebase
 db = QuestionarioFirebase(cred_path, database_url)
-    # Conecta ao Firebase
+# Conecta ao Firebase
 db.conectar()
 # Função principal que gera a interface com Streamlit
 def main():
@@ -49,15 +50,8 @@ def main():
 def sistema_perguntas(escolha):
     st.title("🧠 Sistema de Perguntas e Respostas")
 
-    llm = QAGenerator(n_perguntas=3,arquivo_csv=file_path_dataset)
 
-    # Carregar dataset (ou criar novo)
-    try:
 
-        df = pd.read_csv(file_path_dataset)
-    except FileNotFoundError as e:
-        print(e)
-        df = pd.DataFrame(columns=['original_pergunta','Pergunta', 'Resposta'])
 
     if escolha == "Sistema de Perguntas":
         st.subheader("Faça sua pergunta")
@@ -70,25 +64,33 @@ def sistema_perguntas(escolha):
                     time.sleep(1)  # Simulação de tempo de processamento
 
                 # Verificar se já existe uma pergunta similar
+                df = db.get_dados_questoes()
                 inicio = time.time()
+
                 check = VerificadorDePerguntas(df, threshold=0.75)
                 pergunta_similar, resposta_similar = check.verificar_similaridade(pergunta)
-
                 if pergunta_similar:
-                    fim = time.time()
-                    st.success("Pergunta similar encontrada!")
-                    st.write(f"**Pergunta:** {pergunta_similar}")
-                    st.write(f"**Resposta:** {resposta_similar}")
+                     fim = time.time()
+                     st.success("Pergunta similar encontrada!")
+                     st.write(f"**Pergunta:** {pergunta_similar}")
+                     st.write(f"**Resposta:** {resposta_similar}")
                 else:
+
                     # Gerar nova resposta e atualizar dataset
+                    llm = QAGenerator(n_perguntas=3)
+
                     resultado = llm.generate_qa(pergunta)
                     fim = time.time()
                     st.success("Nova pergunta gerada!")
                     st.write(f"**Pergunta:** {resultado[0]['pergunta']}")
                     st.write(f"**Resposta:** {resultado[0]['resposta']}")
+                    for i, par in enumerate(resultado, 1):
+                        db.inserir_dados_questao(par['pergunta'], par['resposta'])
 
                 tempo_requisicao = (fim - inicio)*1000
                 db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
+
+
 
         if pergunta:
             if st.button("Avaliar Resposta"):
@@ -101,8 +103,8 @@ def sistema_perguntas(escolha):
     elif escolha == "Histórico":
         st.subheader("Histórico de Perguntas e Respostas")
 
-        df = pd.read_csv(file_path_dataset)
-        st.dataframe(df[['pergunta', 'resposta']], height=400)
+        df = db.get_dados_questoes()
+        st.dataframe(df[['Pergunta', 'Resposta']], height=400)
 
 # Função para a página de avaliação
 def pagina_avaliacao():

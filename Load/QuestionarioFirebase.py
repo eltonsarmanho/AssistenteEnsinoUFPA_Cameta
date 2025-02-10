@@ -3,9 +3,11 @@ from firebase_admin import credentials
 from firebase_admin import db
 import csv
 import time
-import sys
+import pandas as pd
 import os
 import json
+
+
 class QuestionarioFirebase:
     def __init__(self, cred_path, database_url):
         self.cred_path = cred_path
@@ -57,13 +59,12 @@ class QuestionarioFirebase:
             print(f"Erro ao inserir dados no 'Questionario': {error}")
 
     # Método para inserir dados na tabela Questao
-    def inserir_dados_questao(self, pergunta, resposta, classe):
+    def inserir_dados_questao(self, pergunta, resposta):
         try:
             questao_ref = db.reference('Questao')
             novo_id = questao_ref.push({
                 'Pergunta': pergunta,
-                'Resposta': resposta,
-                'Classe': classe
+                'Resposta': resposta
             }).key
             print(f"Dados inseridos no 'Questao' com ID: {novo_id}")
         except Exception as error:
@@ -94,6 +95,46 @@ class QuestionarioFirebase:
                 print("Nenhum dado encontrado na tabela 'Questionario'.")
         except Exception as error:
             print(f"Erro ao listar dados do 'Questionario': {error}")
+
+    def listar_dados_questoes(self):
+        try:
+            questionario_ref = db.reference('Questao')
+            dados = questionario_ref.get()
+            if dados:
+                print("\nDados da tabela 'Questao':")
+                for key, value in dados.items():
+                    print(f"ID: {key}, Pergunta: {value['pergunta']}, Resposta: {value['resposta']}")
+            else:
+                print("Nenhum dado encontrado na tabela 'Questao'.")
+        except Exception as error:
+            print(f"Erro ao listar dados do 'Questao': {error}")
+
+    def get_dados_questoes(self):
+        """
+        Lista os dados da tabela 'Questao' e retorna um DataFrame.
+        """
+        try:
+            questao_ref = db.reference('Questao')
+            dados = questao_ref.get()
+
+            if not dados:
+                print("Nenhum dado encontrado na tabela 'Questao'.")
+                return pd.DataFrame()  # Retorna um DataFrame vazio se não houver dados
+
+            # Converte os dados em uma lista de dicionários
+            lista_dados = []
+            for key, value in dados.items():
+                #value['id'] = key  # Adiciona o ID ao dicionário
+                lista_dados.append(value)
+
+            # Cria um DataFrame a partir da lista de dicionários
+            df = pd.DataFrame(lista_dados)
+
+            return df  # Retorna o DataFrame
+
+        except Exception as error:
+            print(f"Erro ao listar dados do 'Questao': {error}")
+            return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro
 
     # Método genérico para salvar os dados de uma tabela em CSV
     def salvar_tabela_em_csv(self, nome_tabela, nome_arquivo_csv):
@@ -128,17 +169,20 @@ class QuestionarioFirebase:
 # Uso da classe QuestionarioFirebase
 if __name__ == '__main__':
     # Parâmetros de conexão ao Firebase
-    file = "coletadados-f1884-firebase-adminsdk-itqt9-73bd934db1.json"
-    project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do script atual
-    cred_path = os.path.join(project_root, '..', 'Keys', file)
-    database_url = "https://coletadados-f1884-default-rtdb.firebaseio.com/"
+    project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do json atual
+    cred_path = os.path.join(project_root,'..', 'Keys', 'coletadados-firebase.json')
 
+    with open(cred_path, 'r') as file:
+        config = json.load(file)
+    # Acesse os valores no dicionário
+    database_url = config['database_url']
     # Instancia a classe e conecta ao Firebase
-    #firebase_db = QuestionarioFirebase(cred_path, database_url)
+    firebase_db = QuestionarioFirebase(cred_path, database_url)
 
     try:
+        firebase_db.conectar()
         # Cria as estruturas iniciais no Firebase
-        # firebase_db.criar_estruturas()
+        firebase_db.criar_estruturas()
         #
         # # Insere dados na tabela Questionario
         # firebase_db.inserir_dados_questionario(3, 4)
@@ -158,7 +202,8 @@ if __name__ == '__main__':
 
         # Lista os dados da tabela Questionario
         firebase_db.listar_dados_questionario()
-
+        firebase_db.listar_dados_questoes()
+        print(firebase_db.get_dados_questoes())
         # Salva os dados da tabela Questionario em CSV
         #firebase_db.salvar_tabela_em_csv("Questionario", "dados_questionario.csv")
 
