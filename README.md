@@ -10,7 +10,7 @@ O **Assistente de Ensino UFPA Cametá** foi desenvolvido para automatizar respos
 
 ## Funcionalidades
 
-- **Respostas Automatizadas**: O assistente utiliza um modelo de linguagem, Sabiá 2, para fornecer respostas com precisão.
+- **Respostas Automatizadas**: O assistente utiliza um modelo de linguagem, Sabiá 3, para fornecer respostas com precisão.
 - **Fácil Acesso**: Disponível como uma ferramenta online, facilitando o acesso dos alunos às informações essenciais.
   
 ## Tecnologias Utilizadas
