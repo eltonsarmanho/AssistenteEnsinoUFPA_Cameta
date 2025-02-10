@@ -1,27 +1,56 @@
-
-
-import csv
 import os
-from datetime import datetime
-from langchain_community.chat_models import ChatMaritalk
-from langchain_community.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatMaritalk, ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
-
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import BaseOutputParser
 from langchain_core.prompts.chat import ChatPromptTemplate
 from dotenv import load_dotenv
-import pytz  # Adicione esta linha
-import google.generativeai as genai
 
+# Carrega variáveis de ambiente
 load_dotenv()
-import os
 
-# Suppress logging warnings
+# Suprime logs indesejados
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
 
+
+class DictOutputParser(BaseOutputParser):
+    """Parser personalizado para converter a saída em um dicionário."""
+    def parse(self, text: str):
+        qa_pairs = []
+        blocks = [b.strip() for b in text.split("\n\n") if b.strip()]
+        for block in blocks:
+            lines = block.split("\n")
+            # Validação: Verifica se há pelo menos duas linhas no bloco
+            if len(lines) < 2:
+                print(f"Bloco inválido ignorado: {block}")
+                continue
+
+            # Extrai pergunta e resposta
+            try:
+                # Procura por "Pergunta X:" e "Resposta X:"
+                pergunta_line = next((line for line in lines if line.startswith("Pergunta")), None)
+                resposta_line = next((line for line in lines if line.startswith("Resposta")), None)
+
+                if not pergunta_line or not resposta_line:
+                    print(f"Formato inválido no bloco: {block}")
+                    continue
+
+                pergunta = pergunta_line.split(": ", 1)[1].strip()
+                resposta = resposta_line.split(": ", 1)[1].strip()
+
+                qa_pairs.append({
+                    "pergunta": pergunta,
+                    "resposta": resposta
+                })
+            except IndexError:
+                print(f"Erro ao processar bloco: {block}")
+                continue
+
+        return qa_pairs
+
+
 class QAGenerator:
-    def __init__(self, n_perguntas=3,model_name="maritalk"):
+    def __init__(self, n_perguntas=3, model_name="maritalk"):
         self.n_perguntas = n_perguntas + 1  # +1 para incluir a original
         self.model_name = model_name.lower()  # Nome do modelo escolhido
         self._inicializar_modelo()
@@ -36,10 +65,10 @@ class QAGenerator:
             )
         elif self.model_name == "google":
             self.llm = ChatGoogleGenerativeAI(
-                model="gemini-1.5-flash",transport='rest',
+                model="gemini-1.5-flash", transport='rest',
                 google_api_key=os.getenv("GOOGLE_API_KEY"),
-                top_p=0.30 ,
-                max_output_tokens=600# Aumentado para comportar mais perguntas
+                top_p=0.30,
+                max_output_tokens=600  # Aumentado para comportar mais perguntas
             )
         elif self.model_name == "openai":
             self.llm = ChatOpenAI(
@@ -49,59 +78,40 @@ class QAGenerator:
             )
         else:
             raise ValueError(
-                f"Modelo '{self.model_name}' não suportado. Escolha entre 'maritalk', 'google' ou 'openai'.")
+                f"Modelo '{self.model_name}' não suportado. Escolha entre 'maritalk', 'google' ou 'openai'."
+            )
+
         self.prompt_template = ChatPromptTemplate.from_messages([
             ("system",
-             f"""Você é um gerador de perguntas e respostas. Siga estas regras:
-             1. Sempre comece respondendo a pergunta original
-             2. Em seguida, gere {self.n_perguntas - 1} perguntas relacionadas
-             3. Formato obrigatório:
+             f"""Você é um gerador de perguntas e respostas. Siga estas regras RIGOROSAMENTE:
+             1. SEMPRE comece respondendo à pergunta original no formato EXATO:
                 Pergunta 1: [resposta à pergunta original]
                 Resposta 1: [resposta detalhada]
-                {self._format_example(start=2)}"""),
+             2. Em seguida, gere {self.n_perguntas - 1} perguntas relacionadas e suas respostas, seguindo o mesmo formato:
+                Pergunta 2: [pergunta relacionada]
+                Resposta 2: [resposta correspondente]
+                ...
+                Pergunta {self.n_perguntas}: [última pergunta relacionada]
+                Resposta {self.n_perguntas}: [última resposta correspondente]
+             3. NÃO USE MARCADORES (*), LISTAS OU OUTROS FORMATOS. Apenas siga o formato acima.
+             """),
             ("human", "{pergunta}")
         ])
 
-        self.chain = self.prompt_template | self.llm | StrOutputParser()
-
-    def _format_example(self, start=2):
-        example = []
-        for i in range(start, self.n_perguntas + 1):
-            example.append(f"Pergunta {i}: [pergunta relacionada]")
-            example.append(f"Resposta {i}: [resposta correspondente]")
-        return "\n".join(example)
-
-
+        # Usa o parser personalizado
+        self.chain = self.prompt_template | self.llm | DictOutputParser()
 
     def generate_qa(self, pergunta_original):
-        response = self.chain.invoke({"pergunta": pergunta_original})
-        qa_pairs = self._parse_response(response)
-        return qa_pairs
+        # Invoca a cadeia e retorna diretamente o dicionário
+        return self.chain.invoke({"pergunta": pergunta_original})
 
-    def _parse_response(self, response):
-        qa_pairs = []
-        blocks = [b.strip() for b in response.split("\n\n") if b.strip()]
-
-        for block in blocks[:self.n_perguntas]:  # Pega todas as perguntas
-            lines = block.split("\n")
-            if len(lines) >= 2:
-                pergunta = lines[0].split(": ", 1)[1].strip()
-                resposta = lines[1].split(": ", 1)[1].strip()
-                qa_pairs.append({
-                    "pergunta": pergunta,
-                    "resposta": resposta
-                })
-        return qa_pairs
 
 # Exemplo de uso
 if __name__ == "__main__":
     # Cria o gerador e especifica o arquivo
-    gerador = QAGenerator(n_perguntas=3,model_name='google')
-
+    gerador = QAGenerator(n_perguntas=3, model_name='google')
     # Gera e salva automaticamente
-    #resultado = gerador.generate_qa("o que é machine learning?")
-
-    # Nova requisição adiciona ao mesmo arquivo
-    resultado = gerador.generate_qa("o que é linux?")
+    resultado = gerador.generate_qa("Quais alimentos possuem zinco?")
     for i, par in enumerate(resultado, 1):
-        print(par['pergunta'], par['resposta'])
+        print(f"Pergunta {i}: {par['pergunta']}")
+        print(f"Resposta {i}: {par['resposta']}\n")
