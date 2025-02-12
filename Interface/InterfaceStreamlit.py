@@ -1,37 +1,35 @@
 import sys
 import os
-
+#Add Raiz ao sys.path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
-import pandas as pd
 import streamlit as st
 import time
 from Database.ConexaoFirebase import ConexaoFirebase
 from LLM.QAGenerator import QAGenerator
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
-
 from streamlit.web import cli as stcli
 from streamlit import runtime
-import sys
-import os
 import json
-from Database import ConexaoFirebase
 
-project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do json atual
-cred_path = os.path.join(project_root,'..', 'Keys', 'coletadados-firebase.json')
-with open(cred_path, 'r') as file:
-    config = json.load(file)
-# Acesse os valores no dicionário
-database_url = config['database_url']
-# Instancia a classe e conecta ao Firebase
-db = ConexaoFirebase(cred_path, database_url)
-# Conecta ao Firebase
-db.conectar()
+def loadConfig():
+    
+
+    project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do json atual
+    cred_path = os.path.join(project_root,'..', 'Keys', 'coletadados-firebase.json')
+    with open(cred_path, 'r') as file:
+        config = json.load(file)
+    # Acesse os valores no dicionário
+    database_url = config['database_url']
+    # Instancia a classe e conecta ao Firebase
+    db = ConexaoFirebase(cred_path, database_url)
+    # Conecta ao Firebase
+    db.conectar()
 # Função principal que gera a interface com Streamlit
 def main():
 
-
+    loadConfig()
     st.set_page_config(page_title="Sistema de Perguntas e Respostas", layout="wide")
 
     # Inicializar o gerador LLM uma única vez
