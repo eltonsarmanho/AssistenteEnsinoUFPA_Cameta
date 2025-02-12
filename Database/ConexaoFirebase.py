@@ -102,7 +102,7 @@ class ConexaoFirebase:
             if dados:
                 print("\nDados da tabela 'Questao':")
                 for key, value in dados.items():
-                    print(f"ID: {key}, Pergunta: {value['pergunta']}, Resposta: {value['resposta']}")
+                    print(f"ID: {key}, Pergunta: {value['Pergunta']}, Resposta: {value['Resposta']}")
             else:
                 print("Nenhum dado encontrado na tabela 'Questao'.")
         except Exception as error:
@@ -193,7 +193,7 @@ if __name__ == '__main__':
         firebase_db.criar_estruturas()
         #
         # # Insere dados na tabela Questionario
-        # firebase_db.inserir_dados_questionario(3, 4)
+        #firebase_db.inserir_dados_questionario(3, 4)
         #
         # # Insere dados na tabela Questao
         # firebase_db.inserir_dados_questao(
@@ -201,17 +201,17 @@ if __name__ == '__main__':
         # )
         #
         # # Simula uma requisição
-        # pergunta = "Qual é a capital da Arg?"
-        # inicio = time.time()
-        # time.sleep(2)  # Simulação de processamento
-        # fim = time.time()
-        # tempo_requisicao = fim - inicio
-        # firebase_db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
+        pergunta = "Qual é a capital da Africa do Sul?"
+        inicio = time.time()
+        time.sleep(2)  # Simulação de processamento
+        fim = time.time()
+        tempo_requisicao = fim - inicio
+        firebase_db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
 
         # Lista os dados da tabela Questionario
-        firebase_db.listar_dados_questionario()
-        firebase_db.listar_dados_questoes()
-        print(firebase_db.get_dados_questoes())
+        # firebase_db.listar_dados_questionario()
+        # firebase_db.listar_dados_questoes()
+        # print(firebase_db.get_dados_questoes())
         # Salva os dados da tabela Questionario em CSV
         #firebase_db.salvar_tabela_em_csv("Questionario", "dados_questionario.csv")
 
