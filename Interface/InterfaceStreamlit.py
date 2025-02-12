@@ -13,9 +13,9 @@ from streamlit.web import cli as stcli
 from streamlit import runtime
 import json
 
-def loadConfig():
-    
 
+@st.cache_data
+def loadConfig():
     project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do json atual
     cred_path = os.path.join(project_root,'..', 'Keys', 'coletadados-firebase.json')
     with open(cred_path, 'r') as file:
@@ -26,12 +26,15 @@ def loadConfig():
     db = ConexaoFirebase(cred_path, database_url)
     # Conecta ao Firebase
     db.conectar()
+    return db 
 # Função principal que gera a interface com Streamlit
 def main():
 
-    loadConfig()
     st.set_page_config(page_title="Sistema de Perguntas e Respostas", layout="wide")
 
+    # Inicializar o gerador LLM uma única vez
+    if 'db' not in st.session_state:
+        st.session_state.db = loadConfig()
     # Inicializar o gerador LLM uma única vez
     if 'llm' not in st.session_state:
         st.session_state.llm = QAGenerator(n_perguntas=3,model_name='google')  # Instância única
@@ -65,7 +68,7 @@ def sistema_perguntas(escolha):
                     time.sleep(1)  # Simulação de tempo de processamento
 
                 # Verificar se já existe uma pergunta similar
-                df = db.get_dados_questoes()
+                df = st.session_state.db.get_dados_questoes()
                 inicio = time.time()
 
                 check = VerificadorDePerguntas(df, threshold=0.75)
@@ -90,7 +93,7 @@ def sistema_perguntas(escolha):
 
 
                 tempo_requisicao = (fim - inicio)*1000
-                db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
+                st.session_state.db.inserir_dados_requisicoes(pergunta, tempo_requisicao)
 
 
 
@@ -105,7 +108,7 @@ def sistema_perguntas(escolha):
     elif escolha == "Histórico":
         st.subheader("Histórico de Perguntas e Respostas")
 
-        df = db.get_dados_questoes()
+        df = st.session_state.db.get_dados_questoes()
         st.dataframe(df[['Pergunta', 'Resposta']], height=400)
 
 # Função para a página de avaliação
@@ -135,7 +138,7 @@ def pagina_avaliacao():
         if st.button("Enviar Relatório de Erro"):
             try:
                 # Salva a resposta incorreta no Firebase
-                db.inserir_dados_resposta_incorreta(pergunta, resposta)
+                st.session_state.db.inserir_dados_resposta_incorreta(pergunta, resposta)
                 st.success("Erro reportado com sucesso! Uma nova resposta será gerada.")
 
                 # Gera uma nova resposta revisada
@@ -144,7 +147,7 @@ def pagina_avaliacao():
                 st.write(nova_resposta)
 
                 # Atualiza a resposta no Firebase
-                db.substituir_resposta_corrigida(pergunta, nova_resposta)
+                st.session_state.db.substituir_resposta_corrigida(pergunta, nova_resposta)
                 st.success("Resposta corrigida atualizada no sistema!")
             except Exception as error:
                 st.error(f"Erro ao processar o relatório de erro: {error}")
@@ -154,8 +157,8 @@ def pagina_avaliacao():
         try:
            resultado = st.session_state.resultado
            for i, par in enumerate(resultado, 1):
-                db.inserir_dados_questao(par['pergunta'], par['resposta'])
-           db.inserir_dados_questionario(qualidade_resposta, tempo_resposta)
+                st.session_state.db.inserir_dados_questao(par['pergunta'], par['resposta'])
+           st.session_state.db.inserir_dados_questionario(qualidade_resposta, tempo_resposta)
            # Iniciar thread
            st.write(f"Você avaliou a **qualidade** da resposta com {qualidade_resposta} estrelas.")
            st.write(f"Você avaliou o **tempo** de resposta com {tempo_resposta} estrelas.")
