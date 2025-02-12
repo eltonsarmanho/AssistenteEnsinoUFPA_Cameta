@@ -50,12 +50,26 @@ class DictOutputParser(BaseOutputParser):
 
 
 class QAGenerator:
+    
     def __init__(self, n_perguntas=3, model_name="maritalk"):
+        """
+        Inicializa o QAGenerator com o modelo escolhido.
+
+        Args:
+            n_perguntas (int, optional): Número de perguntas a serem geradas.
+                Defaults to 3.
+            model_name (str, optional): Nome do modelo a ser utilizado.
+                Pode ser "maritalk" ou "google". Defaults to "maritalk".
+
+        Raises:
+            ValueError: Se o modelo escolhido não for suportado.
+        """
         self.n_perguntas = n_perguntas + 1  # +1 para incluir a original
         self.model_name = model_name.lower()  # Nome do modelo escolhido
         self._inicializar_modelo()
 
     def _inicializar_modelo(self):
+        
         if self.model_name == "maritalk":
             self.llm = ChatMaritalk(
                 model="sabia-3",

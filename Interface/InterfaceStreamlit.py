@@ -1,11 +1,14 @@
+import sys
+import os
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
 
 import pandas as pd
 import streamlit as st
 import time
-import threading
-from concurrent.futures import ThreadPoolExecutor
-from LLM.QAGenerator import QAGenerator
 from Database.ConexaoFirebase import ConexaoFirebase
+from LLM.QAGenerator import QAGenerator
 from Similaridade.VerificadorDePerguntas import VerificadorDePerguntas
 
 from streamlit.web import cli as stcli
@@ -13,6 +16,7 @@ from streamlit import runtime
 import sys
 import os
 import json
+from Database import ConexaoFirebase
 
 project_root = os.path.dirname(os.path.abspath(__file__))  # Diretório do json atual
 cred_path = os.path.join(project_root,'..', 'Keys', 'coletadados-firebase.json')

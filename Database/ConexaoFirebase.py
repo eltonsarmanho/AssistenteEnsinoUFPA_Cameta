@@ -10,6 +10,16 @@ import json
 
 class ConexaoFirebase:
     def __init__(self, cred_path, database_url):
+        """
+        Inicializa a conexão com o Firebase.
+
+        Parameters
+        ----------
+        cred_path : str
+            Caminho para o arquivo de credenciais do Firebase (JSON).
+        database_url : str
+            URL do banco de dados do Firebase Realtime Database.
+        """
         self.cred_path = cred_path
         self.database_url = database_url
 

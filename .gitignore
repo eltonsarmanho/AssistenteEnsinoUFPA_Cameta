@@ -5,3 +5,9 @@ dataset/dados_questionario.csv
 dataset/dados_requisicoes_categoria.csv
 dataset/dados_requisicoes.csv
 dataset/dataset.csv
+Similaridade/__pycache__/__init__.cpython-310.pyc
+Similaridade/__pycache__/VerificadorDePerguntas.cpython-310.pyc
+LLM/__pycache__/QAGenerator.cpython-310.pyc
+LLM/__pycache__/__init__.cpython-310.pyc
+Database/__pycache__/__init__.cpython-310.pyc
+Database/__pycache__/ConexaoFirebase.cpython-310.pyc
