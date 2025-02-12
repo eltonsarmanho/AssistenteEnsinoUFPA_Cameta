@@ -1,0 +1,7 @@
+.env
+Keys/coletadados-firebase.json
+Keys/config.json
+dataset/dados_questionario.csv
+dataset/dados_requisicoes_categoria.csv
+dataset/dados_requisicoes.csv
+dataset/dataset.csv
